@@ -18,5 +18,13 @@ export function useTodos() {
     dispatch({ type: 'add', id: generateId(), title: trimmed })
   }, [])
 
-  return { todos, dispatch, addTodo }
+  const toggleTodo = useCallback((id: string) => {
+    dispatch({ type: 'toggle', id })
+  }, [])
+
+  const deleteTodo = useCallback((id: string) => {
+    dispatch({ type: 'delete', id })
+  }, [])
+
+  return { todos, dispatch, addTodo, toggleTodo, deleteTodo }
 }

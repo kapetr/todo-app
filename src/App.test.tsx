@@ -42,3 +42,23 @@ test('multiple todos appear in insertion order', async () => {
   expect(items[0]).toHaveTextContent('First')
   expect(items[1]).toHaveTextContent('Second')
 })
+
+test('clicking the checkbox toggles completed state visually', async () => {
+  render(<App />)
+  const input = screen.getByPlaceholderText(/what needs to be done/i)
+  await userEvent.type(input, 'Buy milk{Enter}')
+  const checkbox = screen.getByRole('checkbox')
+  expect(checkbox).not.toBeChecked()
+  await userEvent.click(checkbox)
+  expect(checkbox).toBeChecked()
+})
+
+test('clicking delete removes the todo', async () => {
+  render(<App />)
+  const input = screen.getByPlaceholderText(/what needs to be done/i)
+  await userEvent.type(input, 'Buy milk{Enter}')
+  expect(screen.getByText('Buy milk')).toBeInTheDocument()
+  const deleteBtn = screen.getByRole('button', { name: /delete/i })
+  await userEvent.click(deleteBtn)
+  expect(screen.queryByText('Buy milk')).not.toBeInTheDocument()
+})
