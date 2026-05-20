@@ -2,6 +2,10 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
+beforeEach(() => {
+  localStorage.clear()
+})
+
 test('renders the todos heading', () => {
   render(<App />)
   expect(screen.getByRole('heading', { name: /todos/i })).toBeInTheDocument()
