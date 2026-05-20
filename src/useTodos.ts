@@ -1,8 +1,28 @@
-import { useReducer, useCallback } from 'react'
+import { useReducer, useCallback, useEffect } from 'react'
 import { todosReducer } from './todosReducer'
-import type { State } from './types'
+import type { State, Todo } from './types'
 
-const initialState: State = []
+const STORAGE_KEY = 'todo-app:todos:v1'
+
+function loadFromStorage(): State {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    const valid = parsed.every(
+      (item) =>
+        item &&
+        typeof item === 'object' &&
+        typeof item.id === 'string' &&
+        typeof item.title === 'string' &&
+        typeof item.completed === 'boolean'
+    )
+    return valid ? (parsed as Todo[]) : []
+  } catch {
+    return []
+  }
+}
 
 let counter = 0
 function generateId(): string {
@@ -10,7 +30,11 @@ function generateId(): string {
 }
 
 export function useTodos() {
-  const [todos, dispatch] = useReducer(todosReducer, initialState)
+  const [todos, dispatch] = useReducer(todosReducer, undefined, loadFromStorage)
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+  }, [todos])
 
   const addTodo = useCallback((title: string) => {
     const trimmed = title.trim()
