@@ -24,3 +24,33 @@ test('add appends in insertion order', () => {
   const s2 = todosReducer(s1, { type: 'add', id: '2', title: 'Second' })
   expect(s2.map(t => t.title)).toEqual(['First', 'Second'])
 })
+
+test('toggle flips completed for target id, leaves others unchanged', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'add', id: '2', title: 'B' })
+  const s3 = todosReducer(s2, { type: 'toggle', id: '1' })
+  expect(s3[0]).toEqual({ id: '1', title: 'A', completed: true })
+  expect(s3[1]).toEqual({ id: '2', title: 'B', completed: false })
+})
+
+test('toggle flips completed back when toggled twice', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'toggle', id: '1' })
+  const s3 = todosReducer(s2, { type: 'toggle', id: '1' })
+  expect(s3[0].completed).toBe(false)
+})
+
+test('delete removes the target id, preserves order of the rest', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'add', id: '2', title: 'B' })
+  const s3 = todosReducer(s2, { type: 'add', id: '3', title: 'C' })
+  const s4 = todosReducer(s3, { type: 'delete', id: '2' })
+  expect(s4).toHaveLength(2)
+  expect(s4.map(t => t.id)).toEqual(['1', '3'])
+})
+
+test('delete is a no-op for unknown id', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'delete', id: 'unknown' })
+  expect(s2).toHaveLength(1)
+})
