@@ -70,3 +70,21 @@ test('edit with empty post-trim title deletes the todo', () => {
   expect(s3).toHaveLength(1)
   expect(s3[0].id).toBe('2')
 })
+
+test('clearCompleted removes only completed todos, preserves active ones and order', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'add', id: '2', title: 'B' })
+  const s3 = todosReducer(s2, { type: 'add', id: '3', title: 'C' })
+  const s4 = todosReducer(s3, { type: 'toggle', id: '1' })
+  const s5 = todosReducer(s4, { type: 'toggle', id: '3' })
+  const s6 = todosReducer(s5, { type: 'clearCompleted' })
+  expect(s6).toHaveLength(1)
+  expect(s6[0]).toEqual({ id: '2', title: 'B', completed: false })
+})
+
+test('clearCompleted with no completed todos returns state unchanged', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'clearCompleted' })
+  expect(s2).toHaveLength(1)
+  expect(s2[0].id).toBe('1')
+})
