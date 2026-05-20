@@ -4,7 +4,7 @@ import { TodoInput } from './components/TodoInput'
 import { TodoList } from './components/TodoList'
 
 function App() {
-  const { todos, addTodo, toggleTodo, deleteTodo } = useTodos()
+  const { todos, addTodo, toggleTodo, deleteTodo, editTodo } = useTodos()
 
   return (
     <div className="app-container">
@@ -13,7 +13,7 @@ function App() {
       </header>
       <main className="todo-card">
         <TodoInput onAdd={addTodo} />
-        <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
+        <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} onEdit={editTodo} />
       </main>
     </div>
   )

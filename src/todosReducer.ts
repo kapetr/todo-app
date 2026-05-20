@@ -9,8 +9,11 @@ export function todosReducer(state: State, action: Action): State {
     }
     case 'toggle':
       return state.map(t => t.id === action.id ? { ...t, completed: !t.completed } : t)
-    case 'edit':
-      return state.map(t => t.id === action.id ? { ...t, title: action.title.trim() } : t)
+    case 'edit': {
+      const title = action.title.trim()
+      if (!title) return state.filter(t => t.id !== action.id)
+      return state.map(t => t.id === action.id ? { ...t, title } : t)
+    }
     case 'delete':
       return state.filter(t => t.id !== action.id)
     case 'clearCompleted':

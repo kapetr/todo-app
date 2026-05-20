@@ -54,3 +54,19 @@ test('delete is a no-op for unknown id', () => {
   const s2 = todosReducer(s1, { type: 'delete', id: 'unknown' })
   expect(s2).toHaveLength(1)
 })
+
+test('edit updates the trimmed title for the matching id, others unchanged', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'add', id: '2', title: 'B' })
+  const s3 = todosReducer(s2, { type: 'edit', id: '1', title: '  Updated  ' })
+  expect(s3[0]).toEqual({ id: '1', title: 'Updated', completed: false })
+  expect(s3[1]).toEqual({ id: '2', title: 'B', completed: false })
+})
+
+test('edit with empty post-trim title deletes the todo', () => {
+  const s1 = todosReducer(empty, { type: 'add', id: '1', title: 'A' })
+  const s2 = todosReducer(s1, { type: 'add', id: '2', title: 'B' })
+  const s3 = todosReducer(s2, { type: 'edit', id: '1', title: '   ' })
+  expect(s3).toHaveLength(1)
+  expect(s3[0].id).toBe('2')
+})
